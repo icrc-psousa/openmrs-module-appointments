@@ -402,13 +402,12 @@ public class AppointmentsServiceImpl implements AppointmentsService, Application
             InvitationRequest invitationRequest = TeleHealthUtils.createInvitation(appointment);
             if (!AppointmentStatus.Cancelled.equals(appointment.getStatus())) {
                 Invite invite = teleHealthService.invite(invitationRequest);
-                if (invite != null) {
+                if (invite != null && appointment.getExternalId()==null) {
+                    String comments = appointment.getComments();
+                    comments = (comments == null ? "" : comments) + "\n\nTelehealth Link: \n" + invite.getDoctorURL();
+                    appointment.setComments(comments);
                     appointment.setExternalId(invite.getId());
                 }
-
-                //String comments = appointment.getComments();
-                //comments = (comments == null ? "" : comments) + "\n\nTelehealth Link: \n" + invitation.getPatientURL();
-                //appointment.setComments(comments);
             } else {
                 teleHealthService.delete(appointment.getExternalId());
             }
