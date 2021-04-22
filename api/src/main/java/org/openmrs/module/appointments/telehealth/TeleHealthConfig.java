@@ -10,8 +10,7 @@ public class TeleHealthConfig {
 
     @Bean
     public RestTemplate restTemplate() {
-        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-        RestTemplate restTemplate = new RestTemplate(factory);
+        RestTemplate restTemplate = new RestTemplate();
         restTemplate.setErrorHandler(new RestTemplateResponseErrorHandler());
         return restTemplate;
     }

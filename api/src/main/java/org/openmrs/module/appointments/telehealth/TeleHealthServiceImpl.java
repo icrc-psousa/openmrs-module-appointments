@@ -1,14 +1,20 @@
 package org.openmrs.module.appointments.telehealth;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPatch;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.ObjectWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.persistence.Basic;
+import java.io.IOException;
 
 @Service
 public class TeleHealthServiceImpl implements TeleHealthService {
@@ -45,11 +51,7 @@ public class TeleHealthServiceImpl implements TeleHealthService {
                 return response.getInvite();
             }else{
                 uri += invitationRequest.getId();
-                headers.set("X-HTTP-Method-Override", "PATCH");
-                String s;
-
-                //restTemplate.exchange(uri, HttpMethod.PATCH, request, String.class, 1);
-                return restTemplate.postForObject(uri, request, Invite.class);
+                updateAtHomeEncounter(uri, invitationRequest);
             }
         }
         return null;
@@ -67,4 +69,25 @@ public class TeleHealthServiceImpl implements TeleHealthService {
         }
     }
 
+    private void updateAtHomeEncounter(String uri, InvitationRequest invitationRequest) {
+
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        org.apache.http.HttpEntity httpEntity = null;
+        try {
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpPatch httpPatch = new HttpPatch(uri);
+            httpPatch.setHeader("x-access-token", token);
+            httpPatch.setHeader("Content-Type", "application/json");
+
+            String content = ow.writeValueAsString(invitationRequest);
+            if (null != content) {
+                httpEntity = new ByteArrayEntity(content.getBytes("UTF-8"));
+                httpPatch.setEntity(httpEntity);
+            }
+            HttpResponse httpResponse = httpClient.execute(httpPatch);
+            httpResponse.getStatusLine().getStatusCode();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

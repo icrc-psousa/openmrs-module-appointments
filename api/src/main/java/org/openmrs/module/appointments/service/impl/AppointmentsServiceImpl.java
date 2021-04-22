@@ -138,23 +138,8 @@ public class AppointmentsServiceImpl implements AppointmentsService, Application
     }
 
     private void save(Appointment appointment) {
-
-        if (true) {//appointment.getTeleconsultation()) {
-            InvitationRequest invitationRequest = TeleHealthUtils.createInvitation(appointment);
-            if (!AppointmentStatus.Cancelled.equals(appointment.getStatus())) {
-                Invite invite = teleHealthService.invite(invitationRequest);
-                appointment.setExternalId(invite.getId());
-
-                //String comments = appointment.getComments();
-                //comments = (comments == null ? "" : comments) + "\n\nTelehealth Link: \n" + invitation.getPatientURL();
-                //appointment.setComments(comments);
-            } else {
-                teleHealthService.delete(appointment.getExternalId());
-            }
-        }
-
         createAndSetAppointmentAudit(appointment);
-        this.save(appointment);
+        callAtHomeAndSave(appointment);
     }
 
     @Transactional
@@ -225,7 +210,7 @@ public class AppointmentsServiceImpl implements AppointmentsService, Application
         appointmentServiceHelper.validateStatusChangeAndGetErrors(appointment, appointmentStatus, statusChangeValidators);
         validateUserPrivilege(appointment, appointmentStatus);
         appointment.setStatus(appointmentStatus);
-        this.save(appointment);
+        callAtHomeAndSave(appointment);
         String notes = onDate != null ? onDate.toInstant().toString() : null;
         createEventInAppointmentAudit(appointment, notes);
     }
@@ -264,7 +249,7 @@ public class AppointmentsServiceImpl implements AppointmentsService, Application
         AppointmentAudit statusChangeEvent = appointmentAuditDao.getPriorStatusChangeEvent(appointment);
         if (statusChangeEvent != null) {
             appointment.setStatus(statusChangeEvent.getStatus());
-            appointmentDao.save(appointment);
+            callAtHomeAndSave(appointment);
             createEventInAppointmentAudit(appointment, statusChangeEvent.getNotes());
         } else
             throw new APIException("No status change actions to undo");
@@ -323,7 +308,7 @@ public class AppointmentsServiceImpl implements AppointmentsService, Application
         if (isFirstAcceptForRequestedAppointment(providerWithNewResponse, appointment)) {
             changeStatus(appointment, AppointmentStatus.Scheduled.name(), Date.from(Instant.now()));
         } else {
-            this.save(appointment);
+            callAtHomeAndSave(appointment);
         }
         createAppointmentAudit(providerWithNewResponse, appointment, existingProviderInAppointment);
     }
@@ -412,4 +397,22 @@ public class AppointmentsServiceImpl implements AppointmentsService, Application
         appointmentAudits.addAll(new HashSet<>(Collections.singleton(appointmentAudit)));
     }
 
+    private void callAtHomeAndSave(Appointment appointment) {
+        if (appointment.getService()!=null && "@Home".equalsIgnoreCase(appointment.getService().getName())) {
+            InvitationRequest invitationRequest = TeleHealthUtils.createInvitation(appointment);
+            if (!AppointmentStatus.Cancelled.equals(appointment.getStatus())) {
+                Invite invite = teleHealthService.invite(invitationRequest);
+                if (invite != null) {
+                    appointment.setExternalId(invite.getId());
+                }
+
+                //String comments = appointment.getComments();
+                //comments = (comments == null ? "" : comments) + "\n\nTelehealth Link: \n" + invitation.getPatientURL();
+                //appointment.setComments(comments);
+            } else {
+                teleHealthService.delete(appointment.getExternalId());
+            }
+        }
+        appointmentDao.save(appointment);
+    }
 }
