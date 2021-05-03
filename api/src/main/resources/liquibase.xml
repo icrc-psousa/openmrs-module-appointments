@@ -221,6 +221,19 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="create-column-external-id-202104290000" author="Pedro" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="patient_appointment" />
+            <not>
+                <columnExists tableName="patient_appointment" columnName="invite_url" />
+            </not>
+        </preConditions>
+        <addColumn tableName="patient_appointment">
+            <column name="invite_url" type="varchar(50)">
+            </column>
+        </addColumn>
+    </changeSet>
+
     <changeSet id="drop_index_on_appointment_service_table-201707251710" author="Santhosh, Maharjun">
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="appointment_service"/>

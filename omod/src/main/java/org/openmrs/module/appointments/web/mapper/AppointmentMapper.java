@@ -208,6 +208,7 @@ public class AppointmentMapper {
         response.setVoided(a.getVoided());
         response.setEmailIdAvailable(a.isEmailIdAvailable());
         response.setEmailSent(a.getEmailSent());
+        response.setInviteUrl(a.getInviteUrl());
         return response;
     }
 

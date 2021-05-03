@@ -398,7 +398,7 @@ public class AppointmentsServiceImpl implements AppointmentsService, Application
     }
 
     private void callAtHomeAndSave(Appointment appointment) {
-        if (appointment.getService()!=null && "@Home".equalsIgnoreCase(appointment.getService().getName())) {
+        if (Boolean.TRUE.equals(appointment.getTeleconsultation())) {
             InvitationRequest invitationRequest = TeleHealthUtils.createInvitation(appointment);
             if (!AppointmentStatus.Cancelled.equals(appointment.getStatus())) {
                 Invite invite = teleHealthService.invite(invitationRequest);
@@ -407,6 +407,7 @@ public class AppointmentsServiceImpl implements AppointmentsService, Application
                     comments = (comments == null ? "" : comments) + "\n\nTelehealth Link: \n" + invite.getDoctorURL();
                     appointment.setComments(comments);
                     appointment.setExternalId(invite.getId());
+                    appointment.setInviteUrl(invite.getDoctorURL());
                 }
             } else {
                 teleHealthService.delete(appointment.getExternalId());

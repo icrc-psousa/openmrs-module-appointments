@@ -36,6 +36,7 @@ public class Appointment extends BaseOpenmrsData implements Serializable {
     private Appointment relatedAppointment;
     private Boolean isEmailSent;
     private String externalId;
+    private String inviteUrl;
 
     public Set<AppointmentAudit> getAppointmentAudits() {
         return appointmentAudits;
@@ -232,6 +233,14 @@ public class Appointment extends BaseOpenmrsData implements Serializable {
 
     public void setExternalId(String externalId) {
         this.externalId = externalId;
+    }
+
+    public String getInviteUrl() {
+        return inviteUrl;
+    }
+
+    public void setInviteUrl(String inviteUrl) {
+        this.inviteUrl = inviteUrl;
     }
 }
 

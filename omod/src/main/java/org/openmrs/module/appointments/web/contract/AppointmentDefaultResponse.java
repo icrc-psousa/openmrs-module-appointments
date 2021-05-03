@@ -24,6 +24,7 @@ public class AppointmentDefaultResponse {
 	private Boolean voided;
 	private Boolean isEmailIdAvailable;
 	private Boolean isEmailSent;
+	private String inviteUrl;
 
 	public String getUuid() {
 		return uuid;
@@ -174,5 +175,13 @@ public class AppointmentDefaultResponse {
 
 	public void setEmailSent(Boolean emailSent) {
 		isEmailSent = emailSent;
+	}
+
+	public String getInviteUrl() {
+		return inviteUrl;
+	}
+
+	public void setInviteUrl(String inviteUrl) {
+		this.inviteUrl = inviteUrl;
 	}
 }
