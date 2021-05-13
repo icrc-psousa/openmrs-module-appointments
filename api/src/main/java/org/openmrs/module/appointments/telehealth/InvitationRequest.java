@@ -21,6 +21,7 @@ public class InvitationRequest {
     private String gender;
     private Boolean isPatientInvite;
     private Boolean sendInvite;
+    private String patientTZ;
 
     public String getId() {
         return id;
@@ -118,4 +119,11 @@ public class InvitationRequest {
         this.sendInvite = sendInvite;
     }
 
+    public String getPatientTZ() {
+        return patientTZ;
+    }
+
+    public void setPatientTZ(String patientTZ) {
+        this.patientTZ = patientTZ;
+    }
 }

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.bahmni.module</groupId>
 		<artifactId>appointments</artifactId>
-		<version>1.3.0-SNAPSHOT</version>
+		<version>1.3.0-TH-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>appointments-omod</artifactId>
@@ -71,6 +71,17 @@
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>webservices.rest-omod-common</artifactId>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.13</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>4.4.14</version>
 		</dependency>
 	</dependencies>
 
